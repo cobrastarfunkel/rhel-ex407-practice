@@ -1,16 +1,17 @@
 ---
 
 - name: Test vault
-  hosts: combined
+  hosts: nodes
   gather_facts: no
   tasks:
   - name: Include Vault file
     include_vars:
       file: secret.yml
+      name: secret
 
   - name: Debug print
     debug:
-      msg: "{{ node1['user'] }}"
+      msg: "{{ secret[inventory_hostname]['user'] }}"
 
   - name: Debug Names
     debug:

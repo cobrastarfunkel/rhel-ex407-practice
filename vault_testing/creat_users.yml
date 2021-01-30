@@ -1,0 +1,44 @@
+---
+
+- name: Create Users
+  hosts: nodes
+  gather_facts: no
+  pre_tasks:
+    - name: Include vault
+      include_vars: 
+        file: secret.yml
+        name: secret
+  tasks:
+    - name: Create User
+      user:
+        name: "{{ secret[inventory_hostname]['user'] }}" 
+        password: "{{ secret[inventory_hostname]['user'] }}" 
+        group: wheel
+      become: yes
+  
+- name: Push Key
+  hosts: webserver
+  gather_facts: no
+  pre_tasks:
+    - name: Include vault
+      include_vars: 
+        file: secret.yml
+        name: secret
+  tasks:
+    - name: push ssh key
+      authorized_key:
+        user: "{{ secret[inventory_hostname]['user'] }}"
+        state: present
+        key: "{{ lookup('file', '/home/ansible/.ssh/id_rsa.pub') }}"
+      become: yes
+
+- name: pw Sudo
+  hosts: combined
+  gather_facts: no
+  tasks:
+    - name: Replace line in sudoers
+      lineinfile:
+        path: /etc/sudoers
+        regexp: '%wheel  ALL=(ALL)       ALL'
+        line: "%wheel  ALL=(ALL)       NOPASSWD: ALL"
+      become: yes
