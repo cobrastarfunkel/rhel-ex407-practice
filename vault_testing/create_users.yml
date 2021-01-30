@@ -2,7 +2,10 @@
 
 - name: Create Users
   hosts: nodes
+  tags: create
   gather_facts: no
+  vars:
+    - ansible_user: ansible
   pre_tasks:
     - name: Include vault
       include_vars: 
@@ -12,13 +15,16 @@
     - name: Create User
       user:
         name: "{{ secret[inventory_hostname]['user'] }}" 
-        password: "{{ secret[inventory_hostname]['user'] }}" 
+        password: "{{ secret[inventory_hostname]['password'] }}" 
         group: wheel
       become: yes
   
 - name: Push Key
   hosts: webserver
+  tags: create
   gather_facts: no
+  vars:
+    - ansible_user: ansible
   pre_tasks:
     - name: Include vault
       include_vars: 
@@ -34,11 +40,71 @@
 
 - name: pw Sudo
   hosts: combined
+  tags: create
   gather_facts: no
+  vars:
+    - ansible_user: ansible
   tasks:
     - name: Replace line in sudoers
       lineinfile:
         path: /etc/sudoers
         regexp: '%wheel  ALL=(ALL)       ALL'
         line: "%wheel  ALL=(ALL)       NOPASSWD: ALL"
+      become: yes
+
+- name: Remove Users
+  hosts: nodes
+  tags: destroy
+  gather_facts: no
+  vars:
+    - ansible_user: ansible
+  pre_tasks:
+    - name: Include vault
+      include_vars: 
+        file: secret.yml
+        name: secret
+  tasks:
+    - name: Remove User
+      user:
+        name: "{{ secret[inventory_hostname]['user'] }}" 
+        state: absent
+        remove: yes
+      become: yes
+  
+- name: Remove Key
+  hosts: webserver
+  tags: destroy
+  gather_facts: no
+  vars:
+    - ansible_user: ansible
+  pre_tasks:
+    - name: Include vault
+      include_vars: 
+        file: secret.yml
+        name: secret
+  tasks:
+    - name: Check if dir removed
+      stat:
+        path: "/home/{{ secret[inventory_hostname]['user'] }}"
+      register: st
+
+    - name: push ssh key
+      authorized_key:
+        user: "{{ secret[inventory_hostname]['user'] }}"
+        state: absent
+      become: yes
+      when: st.stat.exists
+
+- name: pw Sudo no more
+  hosts: combined
+  tags: destroy
+  gather_facts: no
+  vars:
+    - ansible_user: ansible
+  tasks:
+    - name: Replace line in sudoers
+      lineinfile:
+        path: /etc/sudoers
+        regexp: "%wheel  ALL=(ALL)       NOPASSWD: ALL"
+        line: '%wheel  ALL=(ALL)       ALL'
       become: yes

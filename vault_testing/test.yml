@@ -15,4 +15,4 @@
 
   - name: Debug Names
     debug:
-      msg: "{{ inventory_hostname }}"
+      msg: "{{ ansible_user }}"
