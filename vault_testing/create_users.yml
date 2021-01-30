@@ -11,6 +11,7 @@
         file: secret.yml
         name: secret
       tags: always
+      no_log: True
   tasks:
     - name: Create User
       user:
@@ -19,6 +20,7 @@
         group: wheel
       become: yes
       tags: create
+      no_log: True
 
     - name: Remove User
       user:
@@ -40,6 +42,7 @@
         file: secret.yml
         name: secret
       tags: always
+      no_log: True
   tasks:
     - name: push ssh key
       authorized_key:

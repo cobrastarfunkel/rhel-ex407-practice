@@ -16,3 +16,11 @@
   - name: Debug Names
     debug:
       msg: "{{ ansible_user }}"
+
+  - name: Whoami?
+    shell: "whoami"
+    register: out
+
+  - name: Print it
+    debug:
+      msg: "{{ out }}"
