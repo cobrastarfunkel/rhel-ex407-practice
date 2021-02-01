@@ -1,0 +1,14 @@
+---
+
+- name: Proxy Stuffs
+  hosts: proxy
+  gather_facts: no
+  tasks:
+    - name: Add cronjob
+      cron:
+        name: "log date"
+        minute: "0"
+        job: "date >> /var/log/time.log"
+        user: root
+      become: yes
+        

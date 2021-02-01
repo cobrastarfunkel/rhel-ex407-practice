@@ -1,0 +1,13 @@
+---
+
+- name: Security
+  hosts: webservers
+  roles:
+    - linux-system-roles.selinux 
+  become: yes
+  tasks:
+    - name: set seboolean
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes

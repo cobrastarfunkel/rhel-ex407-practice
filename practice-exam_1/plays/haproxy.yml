@@ -1,0 +1,22 @@
+---
+
+- hosts: proxy
+  roles:
+    - geerlingguy.haproxy
+  become: yes
+  pre_tasks:
+    - name: Firewall allow
+      firewalld:
+        service: http
+        state: enabled
+        permanent: yes
+      notify: Restart firewall
+      become: yes
+
+  handlers:
+    - name: Restart firewall
+      service:
+        name: firewalld
+        state: restarted
+        enabled: True
+      become: yes

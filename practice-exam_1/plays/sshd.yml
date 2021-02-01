@@ -1,0 +1,24 @@
+
+---
+
+- name: Setup sshd
+  gather_facts: no
+  hosts: combined
+  become: yes
+  tasks:
+    - name: Copy sshd_config
+      copy:
+        src: files/sshd_config
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: 0600
+      notify: Restart sshd
+
+  handlers:
+    - name: Restart sshd
+      service:
+        name: sshd
+        state: restarted
+        enabled: True
+

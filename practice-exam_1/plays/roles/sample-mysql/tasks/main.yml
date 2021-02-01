@@ -1,0 +1,60 @@
+---
+
+- name: Include mysql pw
+  include_vars: /home/automation/plays/secret.yml
+
+- name: Partition Drive
+  parted:
+    number: 1
+    device: /dev/sdb
+    flags: [ lvm ]
+    state: present
+    part_end: 800MB
+
+- name: Make VG
+  lvg:
+    pvs: /dev/sdb1
+    vg: vg_database
+
+- name: Make LVM
+  lvol:
+    vg: vg_database
+    lv: lv_mysql
+    size: "512"
+
+- name: Make Filesystem on LVM
+  filesystem:
+    fstype: xfs
+    dev: /dev/mapper/vg_database-lv_mysql
+
+- name: Mount LVM
+  mount:
+    path: /mnt/mysql_backups
+    src: /dev/mapper/vg_database-lv_mysql
+    state: mounted
+    fstype: xfs
+
+- name: Firewall MySQL
+  firewalld:
+    port: 3306/tcp
+    permanent: yes
+    state: enabled
+  notify: Restart firewalld
+
+- name: Install mysqld
+  yum:
+    name: mysql-community-server
+    state: present
+  notify: Enable mysqld
+
+- name: Setup mysql root user
+  mysql_user:
+    host: localhost
+    name: 'root'
+    password: "{{ database_password }}"
+
+- name: Copy my.cnf template
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+    mode: '0644'

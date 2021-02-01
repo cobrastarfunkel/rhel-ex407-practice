@@ -1,0 +1,28 @@
+---
+
+- name: Apache pkgs
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - "httpd"
+    - "mod_ssl"
+    - "php"
+
+- name: httpd Firewall
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: yes
+  loop:
+    - "http"
+    - "https"
+  notify: Restart firewall
+
+- name: Template index.html
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify: Restart Apache
+
+  

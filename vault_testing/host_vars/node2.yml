@@ -1,4 +1,4 @@
 
-ansible_user: dave
+#ansible_user: dave
 # Have to pass ansible users password from cli to overwrite this if removing this user
 #ansible_password: password

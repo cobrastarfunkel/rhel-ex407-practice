@@ -1,0 +1,17 @@
+---
+
+- name: sysctl stuff
+  hosts: combined
+  become: yes
+  tasks:
+    - name: RAM > 2048
+      sysctl:
+        name: vm.swappiness
+        value: '10'
+        state: present
+      when: ansible_memtotal_mb > 2048
+    
+    - name: RAM <= 2048
+      debug:
+        msg: "Server Memory less than 2048MB"
+      when: ansible_memtotal_mb < 2048

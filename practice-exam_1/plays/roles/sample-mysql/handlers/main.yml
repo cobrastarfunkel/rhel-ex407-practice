@@ -1,0 +1,13 @@
+---
+
+- name: Restart firewalld
+  service:
+    name: firewalld
+    state: restarted
+    enabled: yes
+
+- name: Enable mysqld
+  service:
+    name: mysqld
+    state: restarted
+    enabled: yes

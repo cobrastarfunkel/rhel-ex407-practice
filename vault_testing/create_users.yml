@@ -76,15 +76,17 @@
     - name: Replace line in sudoers
       lineinfile:
         path: /etc/sudoers
-        regexp: '%wheel  ALL=(ALL)       ALL'
+        regexp: '%wheel  ALL='
         line: "%wheel  ALL=(ALL)       NOPASSWD: ALL"
+        validate: /usr/sbin/visudo -cf %s
       become: yes
       tags: create
 
     - name: Replace line in sudoers
       lineinfile:
         path: /etc/sudoers
-        regexp: "%wheel  ALL=(ALL)       NOPASSWD: ALL"
+        regexp: "%wheel  ALL="
         line: '%wheel  ALL=(ALL)       ALL'
+        validate: /usr/sbin/visudo -cf %s
       become: yes
       tags: destroy

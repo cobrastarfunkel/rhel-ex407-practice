@@ -1,0 +1,14 @@
+---
+
+- name: Replace motd
+  gather_facts: no
+  become: yes
+  hosts: combined
+  tasks:
+    - name: Template motd
+      template:
+        src: templates/motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: 0644

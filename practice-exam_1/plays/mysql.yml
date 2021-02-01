@@ -1,0 +1,7 @@
+---
+
+- hosts: database
+  roles: 
+    - sample-mysql
+  gather_facts: no
+  become: yes

@@ -1,0 +1,7 @@
+{% if 'webservers' in group_names %}
+“Welcome to Apache server”
+{% elif 'proxy' in group_names %}
+“Welcome to HAProxy server”
+{% elif 'database' in group_names %}
+“Welcome to MySQL server”
+{% endif %}

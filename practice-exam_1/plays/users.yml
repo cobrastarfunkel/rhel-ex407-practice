@@ -1,0 +1,36 @@
+---
+
+- name: "Create Users"
+  hosts: combined
+  gather_facts: no
+  become: yes
+  pre_tasks:
+    - name: Get secret
+      include_vars: 
+        file: secret.yml
+    - name: Include User List
+      include_vars:
+        file: vars/user_list.yml
+
+  tasks:
+    - name: Create Webserver Users
+      user:
+        name: "{{ item['username'] }}"
+        groups: 'wheel'
+        uid: "{{ item['uid'] }}"
+        password: "{{ user_password }}"
+        shell: /bin/bash
+        ssh_key_file: /home/automation/.ssh/id_rsa
+      loop: "{{ users }}"
+      when: "'webservers' in group_names and (item['uid']|string)[0] == '1'"
+
+    - name: Create db Users
+      user:
+        name: "{{ item['username'] }}"
+        groups: 'wheel'
+        uid: "{{ item['uid'] }}"
+        password: "{{ user_password }}"
+        shell: /bin/bash
+        ssh_key_file: /home/automation/.ssh/id_rsa
+      loop: "{{ users }}"
+      when: "'database' in group_names and (item['uid']|string)[0] == '2'"
