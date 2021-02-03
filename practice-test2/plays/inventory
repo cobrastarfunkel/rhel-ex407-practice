@@ -1,0 +1,13 @@
+[webservers]
+192.168.0.3
+
+[proxy]
+192.168.0.5
+
+[database]
+192.168.0.4
+
+[combined:children]
+webservers
+proxy
+database

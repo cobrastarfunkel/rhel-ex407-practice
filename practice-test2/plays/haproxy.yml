@@ -1,0 +1,26 @@
+---
+
+- name: Haproxy Setup
+  roles:
+    - geerlingguy.haproxy
+  vars:
+    haproxy_backend_servers:
+      - name: app1
+        address: 192.168.0.3:80
+    haproxy_backend_balance_method: 'roundrobin'
+  hosts: proxy
+  become: yes
+  tasks:
+    - name: firewalld
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+      notify: Restart Firewall
+  handlers:
+    - name: Restart Firewall
+      service:
+        name: firewalld
+        state: restarted
+        enabled: yes
+

@@ -1,0 +1,15 @@
+---
+# handlers file for roles/sample-apache
+
+- name: Restart Apache
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes
+    
+- name: Restart Firewall
+  service:
+    name: firewalld
+    state: restarted
+    enabled: yes
+    

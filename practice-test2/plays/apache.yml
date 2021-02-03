@@ -1,0 +1,8 @@
+---
+
+- name: Build Webserver
+  roles:
+    - sample-apache
+  hosts: webservers
+  become: yes
+  force_handlers: True

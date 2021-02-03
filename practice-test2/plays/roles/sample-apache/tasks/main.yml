@@ -1,0 +1,27 @@
+---
+# tasks file for roles/sample-apache
+
+- name:  Install pkgs
+  yum:
+    name: "{{ item }}"
+  loop:
+    - httpd
+    - mod_ssl
+    - php
+  notify: Restart Apache
+
+- name: Firewalld it
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop:
+    - http
+    - https
+  notify: Restart Firewall
+
+- name: Template it
+  template:
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+  notify: Restart Apache
